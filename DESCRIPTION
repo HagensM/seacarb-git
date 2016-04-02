@@ -1,6 +1,6 @@
 Package: seacarb
 Title: Seawater Carbonate Chemistry
-Version: 3.0.13
+Version: 3.0.14
 Date: 2016-04-02
 LazyData: true
 Authors@R: c(person("Jean-Pierre", "Gattuso", role = c("aut", "cre", "cph"), email = "gattuso@obs-vlfr.fr"),
@@ -13,7 +13,8 @@ Authors@R: c(person("Jean-Pierre", "Gattuso", role = c("aut", "cre", "cph"), ema
   person("Karline", "Soetaert", role = "ctb"),
   person("James", "Rae", role = "ctb")
   )
-Depends: R (>= 2.10), oce
+Imports: oce (>=0.9-17)
+Depends: R (>= 2.10)
 Description: Calculates parameters of the seawater carbonate system and assists
     the design of ocean acidification perturbation experiments.
 Encoding: UTF-8
