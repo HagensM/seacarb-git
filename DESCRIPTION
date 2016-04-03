@@ -13,7 +13,7 @@ Authors@R: c(person("Jean-Pierre", "Gattuso", role = c("aut", "cre", "cph"), ema
   person("Karline", "Soetaert", role = "ctb"),
   person("James", "Rae", role = "ctb")
   )
-Imports: oce (>=0.9-17)
+Imports: oce (>= 0.9-17)
 Depends: R (>= 2.10)
 Description: Calculates parameters of the seawater carbonate system and assists
     the design of ocean acidification perturbation experiments.
