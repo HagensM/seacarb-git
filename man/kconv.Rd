@@ -20,10 +20,13 @@ if not given, it will be computed, if given, it allows for speed optimisation an
 }
 
 \value{
-The function returns a list with 3 conversion factors :
+The function returns a list with 6 conversion factors :
   \item{ktotal2SWS}{to convert from the total scale to seawater scale}
   \item{ktotal2free}{to convert from the total scale to the free scale}
-  \item{kfree2SWS}{to convert from the free scale to the seawater scale}  
+  \item{kfree2SWS}{to convert from the free scale to the seawater scale}
+  \item{kfree2total}{to convert from the free scale to total scale}
+  \item{kSWS2total}{to convert from the seawater scale to the total scale}
+  \item{kSWS2free}{to convert from the seawater scale to the free scale}  
 }
 
 \details{It is critical to consider that each formulation is valid in specific ranges of temperature and salinity:
