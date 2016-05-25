@@ -54,11 +54,11 @@ function(Kvalue, Ktype, T=25, S=35, P=0, pHscale="T", kconv2ScaleP0=0, kconv2Sca
 
     ##
     ## 1)
-    ## Process  Ktype %in% c("K1", "K2", "K1p", "K2p", "K3p", "Kb", "Khs", "Kn", "Ksi", "Kw")
+    ## Process  Ktype %in% c("K1", "K2", "K1p", "K2p", "K3p", "Kb", "Khs", "Kn", "Ksi", "K2si", "Kw")
     ## 
 
 	# Indices of Kvalue elements where pressure correction to apply on seawater scale
-    i_SWscale <- which (P > 0.0 & Ktype %in% c("K1", "K2", "K1p", "K2p", "K3p", "Kb", "Khs", "Kn", "Ksi", "Kw"))     
+    i_SWscale <- which (P > 0.0 & Ktype %in% c("K1", "K2", "K1p", "K2p", "K3p", "Kb", "Khs", "Kn", "Ksi", "K2si", "Kw"))     
     # if there is any such element
     if (length(i_SWscale) > 0)
     {
