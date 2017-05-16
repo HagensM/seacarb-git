@@ -12,7 +12,8 @@
   alkalinity under natural seawater conditions are negligible. Its input arguments are 
   indentical to those in the “carbfull” function of seacarb.}
 \usage{buffergen(flag, var1, var2, S=35, T=25, Patm=1, P=0, Pt=0, Sit=0, k1k2="x", kf="x",
-                 ks="d", pHscale="T", b="u74", gas="potential", NH4t=0, HSt=0)}
+                 ks="d", pHscale="T", b="u74", gas="potential", warn="y", eos="eos80", 
+                 long=1.e20, lat=1.e20, NH4t=0, HSt=0)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 	\item{flag}{select the couple of variables available. The flags which can be used are: 
@@ -66,11 +67,15 @@ flag = 25     pCO2 and DIC given
   \item{Pt}{Concentration of total phosphate in mol/kg; set to 0 if NA}
   \item{Sit}{Concentration of total silicate in mol/kg; set to 0 if NA}
   \item{k1k2}{"l" for using K1 and K2 from Lueker et al. (2000), "m06" from Millero et al. (2006), "m10" from Millero (2010), "w14" from Waters et al. (2014), and "r" from Roy et al. (1993). "x" is the default flag; the default value is then "l", except if T is outside the range 2 to 35oC and/or S is outside the range 19 to 43. In these cases, the default value is "m10".}
-	\item{kf}{"pf" for using Kf from Perez and Fraga (1987) and "dg" for using Kf from Dickson and Riley (1979 in Dickson and Goyet, 1994). "x" is the default flag; the default value is then "pf", except if T is outside the range 9 to 33oC and/or S is outside the range 10 to 40. In these cases, the default is "dg".}
-	\item{ks}{"d" for using Ks from Dickson (1990) and "k" for using Ks from Khoo et al. (1977), default is "d"} 
-	\item{pHscale}{"T" for the total scale, "F" for the free scale and "SWS" for using the seawater scale, default is "T" (total scale)}
-	\item{b}{Concentration of total boron. "l10" for the Lee et al. (2010) formulation or "u74" for the Uppstrom (1974) formulation, default is "u74" }
+  \item{kf}{"pf" for using Kf from Perez and Fraga (1987) and "dg" for using Kf from Dickson and Riley (1979 in Dickson and Goyet, 1994). "x" is the default flag; the default value is then "pf", except if T is outside the range 9 to 33oC and/or S is outside the range 10 to 40. In these cases, the default is "dg".}
+  \item{ks}{"d" for using Ks from Dickson (1990) and "k" for using Ks from Khoo et al. (1977), default is "d"} 
+  \item{pHscale}{"T" for the total scale, "F" for the free scale and "SWS" for using the seawater scale, default is "T" (total scale)}
+  \item{b}{Concentration of total boron. "l10" for the Lee et al. (2010) formulation or "u74" for the Uppstrom (1974) formulation, default is "u74" }
   \item{gas}{used to indicate the convention for INPUT pCO2, i.e., when it is an input variable (flags 21 to 25): "insitu" indicates it is referenced to in situ pressure and in situ temperature; "potential" indicates it is referenced to 1 atm pressure and potential temperature; and "standard" indicates it is referenced to 1 atm pressure and in situ temperature. All three options should give identical results at surface pressure. This option is not used when pCO2 is not an input variable (flags 1 to 15). The default is "potential".}
+  \item{warn}{"y" to show warnings when T or S go beyond the valid range for constants; "n" to suppress warnings. The default is "y".}
+  \item{eos}{"teos" to specify T and S according to Thermodynamic Equation Of Seawater - 2010 (TEOS-10); "eos" to specify T and S according to EOS-80.}
+  \item{long}{longitude of data point, used when eos parameter is "teos" as a conversion parameter from absolute to practical salinity.}
+  \item{lat}{latitude of data point, used when eos parameter is "teos".}
   \item{NH4t}{Concentration of total ammonium in mol/kg; set to 0 if NA}
   \item{HSt}{Concentration of total hydrogen sulfide in mol/kg; set to 0 if NA}
 }
@@ -117,6 +122,8 @@ The arguments can be given as a unique number or as vectors. If the lengths of t
 
 \item For Kn, the pressure correction was applied on the seawater scale. The pressure correction was applied as described by Millero (1995), and the value was transformed back to the required scale (T, F or SWS).
 }
+	 
+long and lat are used as conversion parameters from absolute to practical salinity: when seawater is not of standard composition, practical salinity alone is not sufficient to compute absolute salinity and vice-versa. One needs to know the density. When long and lat are given, density is inferred from WOA silicate concentration at given location. When they are not, an arbitrary geographic point is chosen: mid equatorial Atlantic. Note that this implies an error on computed salinity up to 0.02 g/kg
 }
 
 \value{The function returns a list containing the following matrices:
@@ -127,11 +134,11 @@ The arguments can be given as a unique number or as vectors. If the lengths of t
   \item{dtotX.dX}{Sensitivity of an acid-base species to a change in its total concentration (dimensionless). Species-specific.}
   \item{dALK.dpH}{Sensitivity of ALK to a change in pH (mol/kg-soln). Species-specific.}
   \item{dtotX.dpH}{Sensitivity of an acid-species to a change in pH (mol/kg-soln). Species-specific.}
-  \item{dH.dALK}{Sensitivity of proton concentration to a change in ALK (dimensionless). Values are the same for all species and all acid-base systems, except for the fluoride and sulfate acid-base systems, which slightly deviate due to pH scale conversion effects.}
+  \item{dH.dALK}{Sensitivity of proton concentration to a change in ALK (dimensionless). Values are the same for all species and all acid-base systems. No output is given for the sulfate and fluoride acid-base systems.}
   \item{dH.dtotX}{Sensitivity of an acid-species to a change in its total concentration (dimensionless). Values are the same for all species of a specific acid-base system.}
   \item{dX.dALK}{Sensitivity of an acid-species to a change in its total concentration (dimensionless). Species-specific.}
   \item{dX.dtotX}{Sensitivity of an acid-species to a change in its total concentration (dimensionless). Species-specific.}
-  \item{dpH.dALK}{Sensitivity of pH due to a change in ALK ((mol/kg-soln)-1). Values are the same for all species and all acid-base systems, except for the fluoride and sulfate acid-base systems, which slightly deviate due to pH scale conversion effects.}
+  \item{dpH.dALK}{Sensitivity of pH due to a change in ALK ((mol/kg-soln)-1). Values are the same for all species and all acid-base systems. No output is given for the sulfate and fluoride acid-base systems.}
   \item{dpH.dtotX}{Sensitivity of pH due to a change in the total concentration of an acid-base system ((mol/kg-soln)-1). Values are the same for all species of a specific acid-base system.}
   \item{beta.H}{proton concentration buffer factor (Eq.4 of Hagens and Middelburg (2016), dimensionless)}   
   \item{RF}{Revelle factor (dimensionless)}
@@ -139,7 +146,7 @@ The arguments can be given as a unique number or as vectors. If the lengths of t
 }
 
 \references{
-Hagens M. and Middelburg J. J., 2016 Generalised expressions for the response of pH to changes in ocean chemistry. \emph{Geochimica et Cosmochimica Acta}.
+Hagens M. and Middelburg J. J., 2016 Generalised expressions for the response of pH to changes in ocean chemistry. \emph{Geochimica et Cosmochimica Acta} \bold{187}, 334-349.
 }
 
 \author{
@@ -150,11 +157,13 @@ Mathilde Hagens \email{m.hagens@uu.nl}
 
 ## With a couple of variables
 buffergen(flag=8, var1=8.2, var2=0.00234, S=35, T=25, P=0, Patm=1.0, Pt=0, Sit=0,
-	pHscale="T", kf="pf", k1k2="l", ks="d", b="u74", gas="potential", NH4t=0, HSt=0)
+	pHscale="T", kf="pf", k1k2="l", ks="d", b="u74", gas="potential", warn="y", eos="eos80", 
+        long=1.e20, lat=1.e20, NH4t=0, HSt=0)
 
 ## With a couple of variables and non-zero nutrient concentrations
 buffergen(flag=8, var1=8.2, var2=0.00234, S=35, T=25, P=0, Patm=1.0, Pt=5e-6, Sit=2e-6,
-	pHscale="T", kf="pf", k1k2="l", ks="d", b="u74", gas="potential", NH4t=10e-6, HSt=0.1e-6)
+	pHscale="T", kf="pf", k1k2="l", ks="d", b="u74", gas="potential", warn="y", eos="eos80", 
+        long=1.e20, lat=1.e20, NH4t=10e-6, HSt=0.1e-6)
 
 ## Using vectors as arguments
 flag <- c(8, 2, 8)
@@ -173,7 +182,8 @@ gas <- c("potential", "potential", "potential")
 NH4t <- c(0, 0, 0)
 HSt <- c(0, 0, 0)
 buffergen(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, Pt=Pt, Sit=Sit, 
-  kf=kf, k1k2=k1k2, pHscale=pHscale, b=b, gas=gas, NH4t=NH4t, HSt=HSt)
+  kf=kf, k1k2=k1k2, pHscale=pHscale, b=b, gas=gas, warn="y", eos="eos80", 
+  long=1.e20, lat=1.e20,NH4t=NH4t, HSt=HSt)
 
 ## Test with all flags 
 flag <- c((1:15), (21:25))
